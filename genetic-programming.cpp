@@ -164,10 +164,10 @@ void printTree(node* tmp, int level)
 		else if (tmp->type == 1) cout << tmp->value << endl;
 		else
 		{
-			if (fabs(tmp->value) < EPS) cout << "Kali" << endl;
-			else if (fabs(tmp->value - 1.0) < EPS) cout << "Bagi" << endl;
-			else if (fabs(tmp->value - 2.0) < EPS) cout << "Tambah" << endl;
-			else cout << "Kurang" << endl;
+			if (fabs(tmp->value) < EPS) cout << "Multiply" << endl;
+			else if (fabs(tmp->value - 1.0) < EPS) cout << "Divide" << endl;
+			else if (fabs(tmp->value - 2.0) < EPS) cout << "Add" << endl;
+			else cout << "Subtract" << endl;
 		}
 		//cout << tmp->type << " " << tmp->value << endl;
 		printTree(tmp->leftChild, level+1);
@@ -201,7 +201,6 @@ int fix(node* &a)
 
 double func(node* tmp, double x)
 {
-	//semua yg type = 0 valuenya jadi x
 	if (tmp->leftChild == NULL)
 	{
 		if (tmp->type == 0) return x;
@@ -246,6 +245,7 @@ bool cmp(double a, double b)
 	return a<b;
 }
 
+//crossover a and b, the offsprings are stored in aa and bb
 void crossover(node* a, node* b, node* &aa, node* &bb)
 {
 	aa = copyTree(a);
@@ -258,7 +258,7 @@ void crossover(node* a, node* b, node* &aa, node* &bb)
 	node* cur1 = aa;
 	node* child1;
 	bool dir1 = 0;
-	//cout<<"Nilai tmp1 : " << tmp1 << endl;
+	//cout<<"Value of tmp1 : " << tmp1 << endl;
 	if (isLeaf(aa))
 	{
 		a_leaf = true;
@@ -300,7 +300,7 @@ void crossover(node* a, node* b, node* &aa, node* &bb)
 	node* cur2 = bb;
 	node* child2;
 	bool dir2 = 0;
-	//cout<<"Nilai tmp2 : " << tmp2 << endl;
+	//cout<<"Value of tmp2 : " << tmp2 << endl;
 	if (isLeaf(bb))
 	{
 		b_leaf = true;
@@ -390,11 +390,12 @@ void crossover(node* a, node* b, node* &aa, node* &bb)
 	fix(bb);
 
 	//printTree(aa,0);
-	//cout << "jumlah node : "<<aa->numSubTree << endl;
+	//cout << "number of node : "<<aa->numSubTree << endl;
 	//printTree(bb,0);
-	//cout << "jumlah node : "<<bb->numSubTree << endl;
+	//cout << "number of node : "<<bb->numSubTree << endl;
 }
 
+//mutation of tree a
 void mutation(node* &a)
 {
 	if (isLeaf(a))
@@ -470,7 +471,7 @@ void generatePopulation()
 		populationFitness.push_back(fitness(newTree));
 	}
 
-	printf("Populasi awalnya adalah :\n");
+	printf("First population is :\n");
 	for (int i=0 ; i<numPopulation ; i++)
 	{
 		printTree(population[i], 0);
@@ -478,6 +479,7 @@ void generatePopulation()
 	}
 }
 
+//MAIN PROGRAM
 int main()
 {
 	srand(time(NULL));
@@ -494,11 +496,11 @@ int main()
 	generatePopulation();
 
 	printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
-	//proses utama
+	//main process
 	for (int iter = 0 ; iter < numIteration ; iter++)
 	{
-		//kawin
-		//nyari 4 pasang buat dikawinin berbeda, milih parentnya acak
+		//crossover
+		//find 4 different couples randomly
 		set< pair<int, int> > flag;		
 		for (int i=0 ; i<4 ; i++)
 		{
@@ -530,7 +532,7 @@ int main()
 			populationFitness.push_back(fitness(offspring1));
 			populationFitness.push_back(fitness(offspring2));			
 		}
-		//seleksi alam
+		//natural selection
 		sort(population.begin(), population.end(), cmpTree);
 		sort(populationFitness.begin(), populationFitness.end(), cmp);
 		int len = population.size();
@@ -541,7 +543,7 @@ int main()
 			len--;
 		}
 		printTree(population[0], 0);
-		printf("Fitness terbaik pada perulangan ke-%d adalah : %lf\n",iter+1, populationFitness[0]);
+		printf("The best fitness in %d generation is : %lf\n",iter+1, populationFitness[0]);
 		printf("----------------------\n");
 	}
 
